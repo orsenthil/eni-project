@@ -6,8 +6,10 @@ import (
 	"time"
 
 	"eni-project/internal/ec2"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	awsec2 "github.com/aws/aws-sdk-go-v2/service/ec2"
+	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 )
 
 func main() {
@@ -23,42 +25,100 @@ func main() {
 	// Create ENI manager
 	eniManager := ec2.NewENIManager(client)
 
-	subnetID := "subnet-0a7bd03887dc3cbd5"
-	instanceID := "i-04890aa7cd8cf81f3"
-
 	// Create context with timeout
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
-	// Create ENI
-	eni, err := eniManager.CreateENI(ctx, subnetID)
+	// Example parameters
+	subnetID := "subnet-0a7bd03887dc3cbd5"
+	instanceID := "i-04890aa7cd8cf81f3"
+	securityGroupID := "sg-0f9acdf364ab834f2"
+
+	// Example: Create an ENI
+	eniConfig := ec2.ENIConfig{
+		SubnetID:         subnetID,
+		Description:      "Example ENI",
+		SecurityGroupIDs: []string{securityGroupID},
+		PrivateIPCount:   2,
+		IPv6AddressCount: 0,
+		Tags: map[string]string{
+			"Name":        "example-eni",
+			"Environment": "development",
+			"ManagedBy":   "eni-manager",
+		},
+	}
+
+	log.Println("Creating ENI...")
+	eni, err := eniManager.CreateENI(ctx, eniConfig)
 	if err != nil {
 		log.Fatalf("Failed to create ENI: %v", err)
 	}
 	log.Printf("Created ENI: %s\n", *eni.NetworkInterface.NetworkInterfaceId)
 
-	// Attach ENI
-	attachID, err := eniManager.AttachENI(ctx, *eni.NetworkInterface.NetworkInterfaceId, instanceID)
+	// Example: Attach ENI to an instance
+	log.Printf("Attaching ENI to instance %s...\n", instanceID)
+	attachID, err := eniManager.AttachENI(ctx, *eni.NetworkInterface.NetworkInterfaceId, instanceID, 1)
 	if err != nil {
 		log.Fatalf("Failed to attach ENI: %v", err)
 	}
 	log.Printf("Attached ENI with attachment ID: %s\n", *attachID)
 
-	// Wait a bit before detaching (in a real application, you might wait until you're done using it)
+	// Example: Assign additional private IPs
+	log.Println("Assigning additional private IPs...")
+	err = eniManager.AssignPrivateIPs(ctx, *eni.NetworkInterface.NetworkInterfaceId, 2, nil)
+	if err != nil {
+		log.Printf("Failed to assign private IPs: %v", err)
+	}
+
+	// Example: Describe ENIs in the subnet
+	log.Println("Describing ENIs...")
+	filters := []types.Filter{
+		{
+			Name:   aws.String("subnet-id"),
+			Values: []string{eniConfig.SubnetID},
+		},
+	}
+
+	enis, err := eniManager.DescribeENIs(ctx, filters)
+	if err != nil {
+		log.Printf("Failed to describe ENIs: %v", err)
+	} else {
+		for _, eni := range enis.NetworkInterfaces {
+			log.Printf("Found ENI: %s, Status: %s\n", *eni.NetworkInterfaceId, eni.Status)
+		}
+	}
+
+	// Example: Modify ENI attributes
+	log.Println("Modifying ENI attributes...")
+	modifyConfig := ec2.ENIModifyConfig{
+		Description: aws.String("Updated description"),
+	}
+	err = eniManager.ModifyENIAttribute(ctx, *eni.NetworkInterface.NetworkInterfaceId, modifyConfig)
+	if err != nil {
+		log.Printf("Failed to modify ENI: %v", err)
+	}
+
+	// Wait before cleanup
+	log.Println("Waiting for 5 seconds before cleanup...")
 	time.Sleep(5 * time.Second)
 
-	// Detach ENI
-	if err := eniManager.DetachENI(ctx, *attachID); err != nil {
+	// Example: Detach ENI
+	log.Println("Detaching ENI...")
+	err = eniManager.DetachENI(ctx, *attachID, true)
+	if err != nil {
 		log.Fatalf("Failed to detach ENI: %v", err)
 	}
-	log.Println("Detached ENI")
 
 	// Wait for detachment to complete
+	log.Println("Waiting for 5 seconds after detachment...")
 	time.Sleep(5 * time.Second)
 
-	// Delete ENI
-	if err := eniManager.DeleteENI(ctx, *eni.NetworkInterface.NetworkInterfaceId); err != nil {
+	// Example: Delete ENI
+	log.Println("Deleting ENI...")
+	err = eniManager.DeleteENI(ctx, *eni.NetworkInterface.NetworkInterfaceId)
+	if err != nil {
 		log.Fatalf("Failed to delete ENI: %v", err)
 	}
-	log.Println("Deleted ENI")
+
+	log.Println("ENI management operations completed successfully")
 }

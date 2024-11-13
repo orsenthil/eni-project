@@ -35,6 +35,46 @@ func (m *MockEC2ClientAPI) EXPECT() *MockEC2ClientAPIMockRecorder {
 	return m.recorder
 }
 
+// AssignIpv6Addresses mocks base method.
+func (m *MockEC2ClientAPI) AssignIpv6Addresses(arg0 context.Context, arg1 *ec2.AssignIpv6AddressesInput, arg2 ...func(*ec2.Options)) (*ec2.AssignIpv6AddressesOutput, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{arg0, arg1}
+	for _, a := range arg2 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "AssignIpv6Addresses", varargs...)
+	ret0, _ := ret[0].(*ec2.AssignIpv6AddressesOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// AssignIpv6Addresses indicates an expected call of AssignIpv6Addresses.
+func (mr *MockEC2ClientAPIMockRecorder) AssignIpv6Addresses(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{arg0, arg1}, arg2...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AssignIpv6Addresses", reflect.TypeOf((*MockEC2ClientAPI)(nil).AssignIpv6Addresses), varargs...)
+}
+
+// AssignPrivateIpAddresses mocks base method.
+func (m *MockEC2ClientAPI) AssignPrivateIpAddresses(arg0 context.Context, arg1 *ec2.AssignPrivateIpAddressesInput, arg2 ...func(*ec2.Options)) (*ec2.AssignPrivateIpAddressesOutput, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{arg0, arg1}
+	for _, a := range arg2 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "AssignPrivateIpAddresses", varargs...)
+	ret0, _ := ret[0].(*ec2.AssignPrivateIpAddressesOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// AssignPrivateIpAddresses indicates an expected call of AssignPrivateIpAddresses.
+func (mr *MockEC2ClientAPIMockRecorder) AssignPrivateIpAddresses(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{arg0, arg1}, arg2...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AssignPrivateIpAddresses", reflect.TypeOf((*MockEC2ClientAPI)(nil).AssignPrivateIpAddresses), varargs...)
+}
+
 // AttachNetworkInterface mocks base method.
 func (m *MockEC2ClientAPI) AttachNetworkInterface(arg0 context.Context, arg1 *ec2.AttachNetworkInterfaceInput, arg2 ...func(*ec2.Options)) (*ec2.AttachNetworkInterfaceOutput, error) {
 	m.ctrl.T.Helper()
@@ -75,6 +115,26 @@ func (mr *MockEC2ClientAPIMockRecorder) CreateNetworkInterface(arg0, arg1 interf
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateNetworkInterface", reflect.TypeOf((*MockEC2ClientAPI)(nil).CreateNetworkInterface), varargs...)
 }
 
+// CreateTags mocks base method.
+func (m *MockEC2ClientAPI) CreateTags(arg0 context.Context, arg1 *ec2.CreateTagsInput, arg2 ...func(*ec2.Options)) (*ec2.CreateTagsOutput, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{arg0, arg1}
+	for _, a := range arg2 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "CreateTags", varargs...)
+	ret0, _ := ret[0].(*ec2.CreateTagsOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateTags indicates an expected call of CreateTags.
+func (mr *MockEC2ClientAPIMockRecorder) CreateTags(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{arg0, arg1}, arg2...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTags", reflect.TypeOf((*MockEC2ClientAPI)(nil).CreateTags), varargs...)
+}
+
 // DeleteNetworkInterface mocks base method.
 func (m *MockEC2ClientAPI) DeleteNetworkInterface(arg0 context.Context, arg1 *ec2.DeleteNetworkInterfaceInput, arg2 ...func(*ec2.Options)) (*ec2.DeleteNetworkInterfaceOutput, error) {
 	m.ctrl.T.Helper()
@@ -95,6 +155,86 @@ func (mr *MockEC2ClientAPIMockRecorder) DeleteNetworkInterface(arg0, arg1 interf
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteNetworkInterface", reflect.TypeOf((*MockEC2ClientAPI)(nil).DeleteNetworkInterface), varargs...)
 }
 
+// DescribeInstanceTypes mocks base method.
+func (m *MockEC2ClientAPI) DescribeInstanceTypes(arg0 context.Context, arg1 *ec2.DescribeInstanceTypesInput, arg2 ...func(*ec2.Options)) (*ec2.DescribeInstanceTypesOutput, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{arg0, arg1}
+	for _, a := range arg2 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "DescribeInstanceTypes", varargs...)
+	ret0, _ := ret[0].(*ec2.DescribeInstanceTypesOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DescribeInstanceTypes indicates an expected call of DescribeInstanceTypes.
+func (mr *MockEC2ClientAPIMockRecorder) DescribeInstanceTypes(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{arg0, arg1}, arg2...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DescribeInstanceTypes", reflect.TypeOf((*MockEC2ClientAPI)(nil).DescribeInstanceTypes), varargs...)
+}
+
+// DescribeInstances mocks base method.
+func (m *MockEC2ClientAPI) DescribeInstances(arg0 context.Context, arg1 *ec2.DescribeInstancesInput, arg2 ...func(*ec2.Options)) (*ec2.DescribeInstancesOutput, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{arg0, arg1}
+	for _, a := range arg2 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "DescribeInstances", varargs...)
+	ret0, _ := ret[0].(*ec2.DescribeInstancesOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DescribeInstances indicates an expected call of DescribeInstances.
+func (mr *MockEC2ClientAPIMockRecorder) DescribeInstances(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{arg0, arg1}, arg2...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DescribeInstances", reflect.TypeOf((*MockEC2ClientAPI)(nil).DescribeInstances), varargs...)
+}
+
+// DescribeNetworkInterfaces mocks base method.
+func (m *MockEC2ClientAPI) DescribeNetworkInterfaces(arg0 context.Context, arg1 *ec2.DescribeNetworkInterfacesInput, arg2 ...func(*ec2.Options)) (*ec2.DescribeNetworkInterfacesOutput, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{arg0, arg1}
+	for _, a := range arg2 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "DescribeNetworkInterfaces", varargs...)
+	ret0, _ := ret[0].(*ec2.DescribeNetworkInterfacesOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DescribeNetworkInterfaces indicates an expected call of DescribeNetworkInterfaces.
+func (mr *MockEC2ClientAPIMockRecorder) DescribeNetworkInterfaces(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{arg0, arg1}, arg2...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DescribeNetworkInterfaces", reflect.TypeOf((*MockEC2ClientAPI)(nil).DescribeNetworkInterfaces), varargs...)
+}
+
+// DescribeSubnets mocks base method.
+func (m *MockEC2ClientAPI) DescribeSubnets(arg0 context.Context, arg1 *ec2.DescribeSubnetsInput, arg2 ...func(*ec2.Options)) (*ec2.DescribeSubnetsOutput, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{arg0, arg1}
+	for _, a := range arg2 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "DescribeSubnets", varargs...)
+	ret0, _ := ret[0].(*ec2.DescribeSubnetsOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DescribeSubnets indicates an expected call of DescribeSubnets.
+func (mr *MockEC2ClientAPIMockRecorder) DescribeSubnets(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{arg0, arg1}, arg2...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DescribeSubnets", reflect.TypeOf((*MockEC2ClientAPI)(nil).DescribeSubnets), varargs...)
+}
+
 // DetachNetworkInterface mocks base method.
 func (m *MockEC2ClientAPI) DetachNetworkInterface(arg0 context.Context, arg1 *ec2.DetachNetworkInterfaceInput, arg2 ...func(*ec2.Options)) (*ec2.DetachNetworkInterfaceOutput, error) {
 	m.ctrl.T.Helper()
@@ -113,4 +253,64 @@ func (mr *MockEC2ClientAPIMockRecorder) DetachNetworkInterface(arg0, arg1 interf
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DetachNetworkInterface", reflect.TypeOf((*MockEC2ClientAPI)(nil).DetachNetworkInterface), varargs...)
+}
+
+// ModifyNetworkInterfaceAttribute mocks base method.
+func (m *MockEC2ClientAPI) ModifyNetworkInterfaceAttribute(arg0 context.Context, arg1 *ec2.ModifyNetworkInterfaceAttributeInput, arg2 ...func(*ec2.Options)) (*ec2.ModifyNetworkInterfaceAttributeOutput, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{arg0, arg1}
+	for _, a := range arg2 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "ModifyNetworkInterfaceAttribute", varargs...)
+	ret0, _ := ret[0].(*ec2.ModifyNetworkInterfaceAttributeOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ModifyNetworkInterfaceAttribute indicates an expected call of ModifyNetworkInterfaceAttribute.
+func (mr *MockEC2ClientAPIMockRecorder) ModifyNetworkInterfaceAttribute(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{arg0, arg1}, arg2...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ModifyNetworkInterfaceAttribute", reflect.TypeOf((*MockEC2ClientAPI)(nil).ModifyNetworkInterfaceAttribute), varargs...)
+}
+
+// UnassignIpv6Addresses mocks base method.
+func (m *MockEC2ClientAPI) UnassignIpv6Addresses(arg0 context.Context, arg1 *ec2.UnassignIpv6AddressesInput, arg2 ...func(*ec2.Options)) (*ec2.UnassignIpv6AddressesOutput, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{arg0, arg1}
+	for _, a := range arg2 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "UnassignIpv6Addresses", varargs...)
+	ret0, _ := ret[0].(*ec2.UnassignIpv6AddressesOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UnassignIpv6Addresses indicates an expected call of UnassignIpv6Addresses.
+func (mr *MockEC2ClientAPIMockRecorder) UnassignIpv6Addresses(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{arg0, arg1}, arg2...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UnassignIpv6Addresses", reflect.TypeOf((*MockEC2ClientAPI)(nil).UnassignIpv6Addresses), varargs...)
+}
+
+// UnassignPrivateIpAddresses mocks base method.
+func (m *MockEC2ClientAPI) UnassignPrivateIpAddresses(arg0 context.Context, arg1 *ec2.UnassignPrivateIpAddressesInput, arg2 ...func(*ec2.Options)) (*ec2.UnassignPrivateIpAddressesOutput, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{arg0, arg1}
+	for _, a := range arg2 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "UnassignPrivateIpAddresses", varargs...)
+	ret0, _ := ret[0].(*ec2.UnassignPrivateIpAddressesOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UnassignPrivateIpAddresses indicates an expected call of UnassignPrivateIpAddresses.
+func (mr *MockEC2ClientAPIMockRecorder) UnassignPrivateIpAddresses(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{arg0, arg1}, arg2...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UnassignPrivateIpAddresses", reflect.TypeOf((*MockEC2ClientAPI)(nil).UnassignPrivateIpAddresses), varargs...)
 }

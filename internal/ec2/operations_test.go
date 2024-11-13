@@ -1,3 +1,4 @@
+// internal/ec2/operations_test.go
 package ec2
 
 import (
@@ -19,22 +20,35 @@ func TestENIManager_CreateENI(t *testing.T) {
 	mockClient := mocks.NewMockEC2ClientAPI(ctrl)
 	manager := NewENIManager(mockClient)
 
-	subnetID := "subnet-12345678"
-	expectedENIID := "eni-12345678"
+	config := ENIConfig{
+		SubnetID:         "subnet-12345678",
+		Description:      "Test ENI",
+		SecurityGroupIDs: []string{"sg-12345678"},
+		PrivateIPCount:   2,
+		IPv6AddressCount: 1,
+		Tags: map[string]string{
+			"Name": "TestENI",
+			"Env":  "Test",
+		},
+	}
 
 	expectedInput := &ec2.CreateNetworkInterfaceInput{
-		SubnetId: &subnetID,
+		SubnetId:                       aws.String(config.SubnetID),
+		Description:                    aws.String(config.Description),
+		Groups:                         config.SecurityGroupIDs,
+		SecondaryPrivateIpAddressCount: aws.Int32(config.PrivateIPCount),
+		Ipv6AddressCount:               aws.Int32(config.IPv6AddressCount),
 		TagSpecifications: []types.TagSpecification{
 			{
 				ResourceType: types.ResourceTypeNetworkInterface,
 				Tags: []types.Tag{
 					{
 						Key:   aws.String("Name"),
-						Value: aws.String("Example ENI"),
+						Value: aws.String("TestENI"),
 					},
 					{
-						Key:   aws.String("CreatedBy"),
-						Value: aws.String("ENIManager"),
+						Key:   aws.String("Env"),
+						Value: aws.String("Test"),
 					},
 				},
 			},
@@ -43,7 +57,9 @@ func TestENIManager_CreateENI(t *testing.T) {
 
 	expectedOutput := &ec2.CreateNetworkInterfaceOutput{
 		NetworkInterface: &types.NetworkInterface{
-			NetworkInterfaceId: &expectedENIID,
+			NetworkInterfaceId: aws.String("eni-12345678"),
+			SubnetId:           aws.String(config.SubnetID),
+			Description:        aws.String(config.Description),
 		},
 	}
 
@@ -51,10 +67,9 @@ func TestENIManager_CreateENI(t *testing.T) {
 		CreateNetworkInterface(gomock.Any(), gomock.Eq(expectedInput)).
 		Return(expectedOutput, nil)
 
-	result, err := manager.CreateENI(context.Background(), subnetID)
-
+	result, err := manager.CreateENI(context.Background(), config)
 	assert.NoError(t, err)
-	assert.Equal(t, expectedENIID, *result.NetworkInterface.NetworkInterfaceId)
+	assert.Equal(t, "eni-12345678", *result.NetworkInterface.NetworkInterfaceId)
 }
 
 func TestENIManager_AttachENI(t *testing.T) {
@@ -64,24 +79,23 @@ func TestENIManager_AttachENI(t *testing.T) {
 	mockClient := mocks.NewMockEC2ClientAPI(ctrl)
 	manager := NewENIManager(mockClient)
 
-	networkInterfaceID := "eni-12345678"
-	instanceID := "i-1234567890abcd"
-	expectedAttachmentID := "eni-attach-12345678"
-
 	expectedInput := &ec2.AttachNetworkInterfaceInput{
+		NetworkInterfaceId: aws.String("eni-12345678"),
+		InstanceId:         aws.String("i-12345678"),
 		DeviceIndex:        aws.Int32(1),
-		InstanceId:         &instanceID,
-		NetworkInterfaceId: &networkInterfaceID,
+	}
+
+	expectedOutput := &ec2.AttachNetworkInterfaceOutput{
+		AttachmentId: aws.String("eni-attach-12345678"),
 	}
 
 	mockClient.EXPECT().
 		AttachNetworkInterface(gomock.Any(), gomock.Eq(expectedInput)).
-		Return(&ec2.AttachNetworkInterfaceOutput{AttachmentId: &expectedAttachmentID}, nil)
+		Return(expectedOutput, nil)
 
-	attachmentID, err := manager.AttachENI(context.Background(), networkInterfaceID, instanceID)
-
+	attachmentID, err := manager.AttachENI(context.Background(), "eni-12345678", "i-12345678", 1)
 	assert.NoError(t, err)
-	assert.Equal(t, expectedAttachmentID, *attachmentID)
+	assert.Equal(t, "eni-attach-12345678", *attachmentID)
 }
 
 func TestENIManager_DetachENI(t *testing.T) {
@@ -91,10 +105,8 @@ func TestENIManager_DetachENI(t *testing.T) {
 	mockClient := mocks.NewMockEC2ClientAPI(ctrl)
 	manager := NewENIManager(mockClient)
 
-	attachmentID := "eni-attach-12345678"
-
 	expectedInput := &ec2.DetachNetworkInterfaceInput{
-		AttachmentId: &attachmentID,
+		AttachmentId: aws.String("eni-attach-12345678"),
 		Force:        aws.Bool(true),
 	}
 
@@ -102,27 +114,84 @@ func TestENIManager_DetachENI(t *testing.T) {
 		DetachNetworkInterface(gomock.Any(), gomock.Eq(expectedInput)).
 		Return(&ec2.DetachNetworkInterfaceOutput{}, nil)
 
-	err := manager.DetachENI(context.Background(), attachmentID)
+	err := manager.DetachENI(context.Background(), "eni-attach-12345678", true)
 	assert.NoError(t, err)
 }
 
-func TestENIManager_DeleteENI(t *testing.T) {
+func TestENIManager_AssignPrivateIPs(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	mockClient := mocks.NewMockEC2ClientAPI(ctrl)
 	manager := NewENIManager(mockClient)
 
-	networkInterfaceID := "eni-12345678"
-
-	expectedInput := &ec2.DeleteNetworkInterfaceInput{
-		NetworkInterfaceId: &networkInterfaceID,
+	expectedInput := &ec2.AssignPrivateIpAddressesInput{
+		NetworkInterfaceId:             aws.String("eni-12345678"),
+		SecondaryPrivateIpAddressCount: aws.Int32(2),
 	}
 
 	mockClient.EXPECT().
-		DeleteNetworkInterface(gomock.Any(), gomock.Eq(expectedInput)).
-		Return(&ec2.DeleteNetworkInterfaceOutput{}, nil)
+		AssignPrivateIpAddresses(gomock.Any(), gomock.Eq(expectedInput)).
+		Return(&ec2.AssignPrivateIpAddressesOutput{}, nil)
 
-	err := manager.DeleteENI(context.Background(), networkInterfaceID)
+	err := manager.AssignPrivateIPs(context.Background(), "eni-12345678", 2, nil)
 	assert.NoError(t, err)
+}
+
+func TestENIManager_AssignSpecificPrivateIPs(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockClient := mocks.NewMockEC2ClientAPI(ctrl)
+	manager := NewENIManager(mockClient)
+
+	specificIPs := []string{"10.0.0.10", "10.0.0.11"}
+	expectedInput := &ec2.AssignPrivateIpAddressesInput{
+		NetworkInterfaceId: aws.String("eni-12345678"),
+		PrivateIpAddresses: specificIPs,
+	}
+
+	mockClient.EXPECT().
+		AssignPrivateIpAddresses(gomock.Any(), gomock.Eq(expectedInput)).
+		Return(&ec2.AssignPrivateIpAddressesOutput{}, nil)
+
+	err := manager.AssignPrivateIPs(context.Background(), "eni-12345678", 0, specificIPs)
+	assert.NoError(t, err)
+}
+
+func TestENIManager_DescribeENIs(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockClient := mocks.NewMockEC2ClientAPI(ctrl)
+	manager := NewENIManager(mockClient)
+
+	filters := []types.Filter{
+		{
+			Name:   aws.String("subnet-id"),
+			Values: []string{"subnet-12345678"},
+		},
+	}
+
+	expectedInput := &ec2.DescribeNetworkInterfacesInput{
+		Filters: filters,
+	}
+
+	expectedOutput := &ec2.DescribeNetworkInterfacesOutput{
+		NetworkInterfaces: []types.NetworkInterface{
+			{
+				NetworkInterfaceId: aws.String("eni-12345678"),
+				SubnetId:           aws.String("subnet-12345678"),
+			},
+		},
+	}
+
+	mockClient.EXPECT().
+		DescribeNetworkInterfaces(gomock.Any(), gomock.Eq(expectedInput)).
+		Return(expectedOutput, nil)
+
+	result, err := manager.DescribeENIs(context.Background(), filters)
+	assert.NoError(t, err)
+	assert.Len(t, result.NetworkInterfaces, 1)
+	assert.Equal(t, "eni-12345678", *result.NetworkInterfaces[0].NetworkInterfaceId)
 }
